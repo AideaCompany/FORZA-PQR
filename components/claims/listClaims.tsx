@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Confirm } from "semantic-ui-react";
 import { useRouter } from "next/router";
 import axiosInstance from "../../axios/axios";
 import useData from "../../providers/DataContext";
 import { IClaims } from "../../types/interfaces/claims";
-import { Modal } from "antd";
+import { Tooltip } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 
-export function listClaims(props: {
-  record: any;
-  afterDelete?: () => void;
-  onDelete: (id: string) => void;
-}) {
+export function listClaims() {
   const [claims, setClaims] = useState([]);
   const { setLoading } = useData();
   useEffect(() => {
@@ -24,19 +21,19 @@ export function listClaims(props: {
     setLoading(false);
   };
 
-  const { onDelete } = props;
+  const handleDelete = async (id: string) => {
+    console.log(id);
 
-  const deleteModal = (item: any) => {
-    Modal.confirm({
-      title: `Eliminar ${item.problem as string}?`,
-      okText: "Eliminar",
-      onOk: () => onDelete(item.id),
-      cancelText: "Cancelar",
-      centered: true,
-      maskClosable: true,
-      okCancel: true,
-    });
+    const res = await axiosInstance.post(`/claims/${id}`);
+    console.log(res);
+    setOpenConfirm(false);
+    getData();
   };
+
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [claimToDelete, setclaimToDelete] = useState<IClaims>();
+
+  const router = useRouter();
 
   return (
     <div className="container">
@@ -49,17 +46,31 @@ export function listClaims(props: {
               <span>{claim.problem}</span>
               <label>Descripción</label>
               <span>{claim.description}</span>
-              <EditOutlined
-                style={{ fontSize: "15px", color: "blue", cursor: "pointer" }}
-              />
-              <DeleteOutlined
-                style={{ fontSize: "15px", color: "red", cursor: "pointer" }}
-                onClick={deleteModal}
-              />
+              <Tooltip placement="top" title="Eliminar">
+                <a>
+                  <DeleteOutlined
+                    style={{
+                      paddingLeft: "5px",
+                      fontSize: "18px",
+                      color: "red",
+                    }}
+                    onClick={() => (
+                      setclaimToDelete(claim), setOpenConfirm(true)
+                    )}
+                  />
+                </a>
+              </Tooltip>
             </div>
           );
         })}
       </div>
+      <Confirm
+        header="Delete a Claim"
+        content={`Are you sure want to delete a claim ${claimToDelete?.id} ?`}
+        open={openConfirm}
+        onCancel={() => setOpenConfirm(false)}
+        onConfirm={() => handleDelete(claimToDelete?.id)}
+      />
     </div>
   );
 }

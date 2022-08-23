@@ -30,7 +30,7 @@ export function login() {
     const response = await axiosInstance.post("/session/app/login", data);
     console.log(response.data);
 
-    router.push("/");
+    router.push("/pqr");
   };
 
   return (
