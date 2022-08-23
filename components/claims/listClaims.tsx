@@ -4,8 +4,13 @@ import { useRouter } from "next/router";
 import axiosInstance from "../../axios/axios";
 import useData from "../../providers/DataContext";
 import { IClaims } from "../../types/interfaces/claims";
+import { Modal } from "antd";
 
-export function listClaims() {
+export function listClaims(props: {
+  record: any;
+  afterDelete?: () => void;
+  onDelete: (id: string) => void;
+}) {
   const [claims, setClaims] = useState([]);
   const { setLoading } = useData();
   useEffect(() => {
@@ -19,13 +24,18 @@ export function listClaims() {
     setLoading(false);
   };
 
-  const handleDelete = async (id: string) => {
-    console.log(id);
+  const { onDelete } = props;
 
-    const res = await axiosInstance.post(`/claims/${id}`);
-    console.log(res);
-
-    getData();
+  const deleteModal = (item: any) => {
+    Modal.confirm({
+      title: `Eliminar ${item.problem as string}?`,
+      okText: "Eliminar",
+      onOk: () => onDelete(item.id),
+      cancelText: "Cancelar",
+      centered: true,
+      maskClosable: true,
+      okCancel: true,
+    });
   };
 
   return (
@@ -39,8 +49,13 @@ export function listClaims() {
               <span>{claim.problem}</span>
               <label>Descripción</label>
               <span>{claim.description}</span>
-              <EditOutlined />
-              <DeleteOutlined />
+              <EditOutlined
+                style={{ fontSize: "15px", color: "blue", cursor: "pointer" }}
+              />
+              <DeleteOutlined
+                style={{ fontSize: "15px", color: "red", cursor: "pointer" }}
+                onClick={deleteModal}
+              />
             </div>
           );
         })}
