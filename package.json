@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "antd": "^4.22.7",
     "axios": "^0.27.2",
     "cookie": "^0.5.0",
     "js-cookie": "^3.0.1",

@@ -2,7 +2,7 @@ import axios from 'axios'
 import Cookie from 'js-cookie'
 
 const axiosInstance = axios.create({
-  baseURL: process.env.API_URL || 'http://localHost:8080/api/V1',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localHost:8080/api/V1',
   headers: {
     accept: 'application/json',
     'Content-Type': 'application/json'
@@ -13,11 +13,11 @@ axiosInstance.interceptors.request.use(async request => {
   try {
     const token = await Cookie.get('authTokenPanel')
     console.log(token);
-    
+
 
     if (token) {
-      ;(request.headers as any).Authorization = `Bearer ${token}` as string
-      ;(request.headers as any)['Content-Type'] = 'application/json'
+      ; (request.headers as any).Authorization = `Bearer ${token}` as string
+        ; (request.headers as any)['Content-Type'] = 'application/json'
     }
 
     return Promise.resolve(request)

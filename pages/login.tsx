@@ -1,69 +1,56 @@
 import { useState } from "react";
-import axios from "axios";
 import Header from "./index";
-import axiosInstance from "./config/axios";
+import axiosInstance from "../axios/axios";
 import { useRouter } from "next/router";
 
 export function login() {
-
   const [credentials, setCredentials] = useState({
-    email: '',
-    password: ''
-  })
+    email: "",
+    password: "",
+  });
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const handleChance = (e) =>{
+  const handleChance = (e) => {
     setCredentials({
-        ...credentials,
-        [e.target.name]: e.target.value,
-
-    }) 
-  }
+      ...credentials,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   ////Get information
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(credentials);
     var data = JSON.stringify({
-      "email": credentials.email,
-      "password": credentials.password
+      email: credentials.email,
+      password: credentials.password,
     });
-    
-    const response = await axiosInstance.post('/session/app/login' , data) 
-    console.log(response.data);
-    
-    router.push('/pqr')
-  }
 
+    const response = await axiosInstance.post("/session/app/login", data);
+    console.log(response.data);
+
+    router.push("/");
+  };
 
   return (
     <div className="container">
       <Header />
-      <h1>
-      LOGIN
-      </h1>
+      <h1>LOGIN</h1>
       <form onSubmit={handleSubmit}>
-      
-      <label>
-           Email
-           <input 
-           name="email" 
-           type="email" 
-           onChange={handleChance}/>
-       </label>
         <label>
-            Password
-            <input 
-            name="password" 
-            type="password" 
-            onChange={handleChance} />
+          Email
+          <input name="email" type="email" onChange={handleChance} />
         </label>
-        
+        <label>
+          Password
+          <input name="password" type="password" onChange={handleChance} />
+        </label>
+
         <input type="submit" />
-    </form>
+      </form>
     </div>
   );
 }
 
-export default login
+export default login;

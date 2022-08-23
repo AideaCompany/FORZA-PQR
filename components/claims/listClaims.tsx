@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
-import { Button, Confirm } from "semantic-ui-react";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import axiosInstance from "./config/axios";
+import axiosInstance from "../../axios/axios";
+import useData from "../../providers/DataContext";
+import { IClaims } from "../../types/interfaces/claims";
 
 export function listClaims() {
   const [claims, setClaims] = useState([]);
+  const { setLoading } = useData();
   useEffect(() => {
     getData();
   }, []);
 
   const getData = async () => {
+    setLoading(true);
     const response = await axiosInstance.get("/claims");
     setClaims(response.data);
+    setLoading(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -22,10 +27,6 @@ export function listClaims() {
 
     getData();
   };
-
-  const [openConfirm, setOpenConfirm] = useState(false);
-
-  const router = useRouter();
 
   return (
     <div className="container">
@@ -38,20 +39,12 @@ export function listClaims() {
               <span>{claim.problem}</span>
               <label>Descripción</label>
               <span>{claim.description}</span>
-              <button onClick={() => setOpenConfirm(true)}>BORRAR</button>
+              <EditOutlined />
+              <DeleteOutlined />
             </div>
           );
         })}
       </div>
-      <Confirm
-        header="Delete a Claim"
-        content={`Are you sure want to delete a claim ${router.query.id} ?`}
-        open={openConfirm}
-        onCancel={() => setOpenConfirm(false)}
-        onConfirm={() =>
-          typeof router.query.id === "string" && handleDelete(router.query.id)
-        }
-      />
     </div>
   );
 }
