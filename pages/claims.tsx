@@ -8,7 +8,7 @@ import useData from "../providers/DataContext";
 const Claims = () => {
   return (
     <Layout>
-      <h2>RECLAMOS</h2>
+      <h1>RECLAMOS</h1>
       <FormClaims />
       <ListClaims />
     </Layout>

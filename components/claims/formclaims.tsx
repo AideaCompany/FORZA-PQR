@@ -2,63 +2,88 @@ import { useState } from "react";
 import axiosInstance from "../../axios/axios";
 import { useRouter } from "next/router";
 import useData from "../../providers/DataContext";
-import { IClaims } from "../../types/interfaces/claims";
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Select,
+  Switch,
+} from "antd";
+import { IClaims, unityTime } from "../../types/interfaces/claims";
 
 export function claims() {
-  const [credentials, setCredentials] = useState({
-    problem: "",
-    description: "",
-  });
-
-  const router = useRouter();
-
-  const handleChance = (e) => {
-    setCredentials({
-      ...credentials,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   const { setLoading } = useData();
+  const { Option } = Select;
 
-  ////Get information
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log(credentials);
-    var data = JSON.stringify({
-      problem: credentials.problem,
-      description: credentials.description,
-    });
+  const onFinish = async (data: IClaims) => {
     setLoading(true);
     try {
       await axiosInstance.post("/claims", data);
-    } catch (error) {}
+      message.success("Creado con éxito");
+    } catch (error) {
+      message.error("Ocurrió un error, intenta mas tarde");
+    }
     setLoading(false);
+  };
+  const onChange = (checked: boolean) => {
+    console.log(`switch to ${checked}`);
   };
 
   return (
-    <div className="container">
-      <div className="df">
-        <form onSubmit={handleSubmit}>
-          <label>¿Qué problema tuviste con tu paquete?</label>
-          <select name="problem" onChange={handleChance}>
-            <option>Seleccione una opción</option>
-            <option>Caja dañada</option>
-            <option>No llego el pedido</option>
-            <option>No era lo que esperaba</option>
-          </select>
-          <label>
-            Descripción
-            <textarea
-              name="description"
-              onChange={handleChance}
-              placeholder="Descripción"
-            />
-          </label>
-
-          <input type="submit" />
-        </form>
-      </div>
+    <div className="container_create_sales">
+      <Form
+        autoComplete="off"
+        onFinish={onFinish}
+        initialValues={{ remember: true }}
+      >
+        <div className="container_form_item">
+          <Form.Item
+            label="¿Que problema tuviste con tu paquete?"
+            name="problem"
+            rules={[
+              { required: true, message: "Por favor ingresa el problema" },
+            ]}
+          >
+            <Select
+              defaultValue="Seleccione el problema"
+              style={{ width: 200 }}
+            >
+              {Object.keys(unityTime).map((e) => (
+                <Select.Option key={e} value={e}>
+                  <>
+                    {
+                      //@ts-ignore
+                      unityTime[e]
+                    }
+                  </>
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Agregue una breve descripción"
+            name="description"
+            rules={[
+              { required: true, message: "Por favor ingrese la descripción" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="¿Desea agregar evidencia fotográfica?"
+            name="photos"
+          >
+            <Switch defaultChecked onChange={onChange} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Crear
+            </Button>
+          </Form.Item>
+        </div>
+      </Form>
     </div>
   );
 }
