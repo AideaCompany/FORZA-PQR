@@ -2,16 +2,9 @@ import { useState } from "react";
 import axiosInstance from "../../axios/axios";
 import { useRouter } from "next/router";
 import useData from "../../providers/DataContext";
-import {
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Select,
-  Switch,
-} from "antd";
+import { Button, Card, Form, Input, message, Select, Switch } from "antd";
 import { IClaims, unityTime } from "../../types/interfaces/claims";
+import UploadPhoto from "../uploadPhoto";
 
 export function claims() {
   const { setLoading } = useData();
@@ -26,6 +19,7 @@ export function claims() {
       message.error("Ocurrió un error, intenta mas tarde");
     }
     setLoading(false);
+    console.log(data);
   };
   const onChange = (checked: boolean) => {
     console.log(`switch to ${checked}`);
@@ -76,7 +70,11 @@ export function claims() {
             name="photos"
           >
             <Switch defaultChecked onChange={onChange} />
+            <UploadPhoto name="img1" required={true} />
+            <UploadPhoto name="img2" required={false} />
+            <UploadPhoto name="img3" required={false} />
           </Form.Item>
+          <Form.Item></Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
               Crear
